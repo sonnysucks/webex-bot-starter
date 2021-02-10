@@ -5,6 +5,7 @@ var webhook = require('webex-node-bot-framework/webhook');
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
+const fetch = require('node-fetch');
 var zip = ""
 //sonnybroke it
 /* var script = document.createElement('script');
@@ -228,6 +229,7 @@ framework.hears(/.*/, function (bot, trigger) {
     console.log(`catch-all ifstatement fired for user input: ${trigger.text}`);
     if (`${trigger.text}`.indexOf("weather") >= 0){
       bot.say(`well the weather is being looked up!!! "${trigger.text}"`);
+      weatherlookup(`${trigger.text}`)
       return;
     }
     if (`${trigger.text}` === "gif"){
@@ -253,10 +255,37 @@ function sendHelp(bot) {
     '7. **help** (what you are reading now)');
 }
 
-function weatherlookup(zip){
+async function weatherlookup(zip){
+  var zip = zip.match(/\d+/)[0]; // 10024
+  // OR
+  // var pinCode = locationArr[1].replace(/\D+/g, '');
+  //openweatherAPIKEY c1d6762082541f44755c18b65a390d11
+  // zip format api.openweathermap.org/data/2.5/weather?zip=94040,us&appid={API key}
+  console.log('ZIP: ', zip);
+  app.get('/', (req, res) => {
+     fetch('https://api.openweathermap.org/data/2.5/weather?zip=16046,us&appid=c1d6762082541f44755c18b65a390d11')
+    .then(
+      async function(response) {
+        if (response.status !== 200) {
+          console.log('Looks like there was a problem. Status Code: ' +
+            response.status);
+          return;
+        }
+console.log("HERE I AM");
+        // Examine the text in the response
+        response.json().then(function(data) {
+          console.log('here we go!!');
+          console.log(JSON.stringify(data));
+        });
+      }
+    )
+    .catch(function(err) {
+      console.log('Fetch Error :-S', err);
+    });
 
-
-
+  });
+  console.log('output!!!!');
+  return zip;
 }
 
 
