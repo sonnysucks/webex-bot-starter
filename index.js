@@ -5,11 +5,12 @@ var webhook = require('webex-node-bot-framework/webhook');
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
+var zip = ""
 //sonnybroke it
-var script = document.createElement('script');
+/* var script = document.createElement('script');
 script.src = 'https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js';
 script.type = 'text/javascript';
-
+*/
 
 app.use(bodyParser.json());
 app.use(express.static('images'));
@@ -68,18 +69,6 @@ framework.hears(/help|what can i (do|say)|what (can|do) you do/i, function (bot,
     .then(() => sendHelp(bot))
     .catch((e) => console.error(`Problem in help hander: ${e.message}`));
 });
-
-/* On mention with command
-ex User enters @botname help, the bot will write back in markdown
-*/
-framework.hears("weather"|what is the weather (like|going to be|) today?, function (bot, trigger) {
-  console.log(`weather?! They asked ${trigger.text}`);
-  responded = true;
-  bot.say(`Hello ${trigger.person.displayName}.`)
-    .then(() => sendHelp(bot))
-    .catch((e) => console.error(`Problem in help hander: ${e.message}`));
-});
-
 
 /* On mention with command
 ex User enters @botname framework, the bot will write back in markdown
@@ -218,12 +207,33 @@ framework.hears('reply', function (bot, trigger) {
   bot.reply(trigger.message, msg_attach);
 });
 
+/* On mention with command
+ex User enters @botname help, the bot will write back in markdown
+
+framework.hears('weather'|'what is the weather (like|going to be) today?', function (bot) {
+  console.log(`weather?! They asked ${trigger.text}`);
+  responded = true;
+  bot.say(`Hello ${trigger.person.displayName}.`)
+    .then(() => sendHelp(bot))
+    .catch((e) => console.error(`Problem in help hander: ${e.message}`));
+}); */
+
+
 /* On mention with unexpected bot command
    Its a good practice is to gracefully handle unexpected input
 */
 framework.hears(/.*/, function (bot, trigger) {
   // This will fire for any input so only respond if we haven't already
   if (!responded) {
+    console.log(`catch-all ifstatement fired for user input: ${trigger.text}`);
+    if (`${trigger.text}`.indexOf("weather") >= 0){
+      bot.say(`well the weather is being looked up!!! "${trigger.text}"`);
+      return;
+    }
+    if (`${trigger.text}` === "gif"){
+      bot.say(`well the gif is being looked up!!! "${trigger.text}"`);
+      return;
+    }
     console.log(`catch-all handler fired for user input: ${trigger.text}`);
     bot.say(`Sorry, I don't know how to respond to "${trigger.text}"`)
       .then(() => sendHelp(bot))
@@ -240,8 +250,13 @@ function sendHelp(bot) {
     '4. **card me** (a cool card!) \n' +
     '5. **say hi to everyone** (everyone gets a greeting using a call to the Webex SDK) \n' +
     '6. **reply** (have bot reply to your message) \n' +
-    '7. **help** (what you are reading now) \n'
-    '8. **weather** (/weather ZIPCODE to get a forecast reply!)'');
+    '7. **help** (what you are reading now)');
+}
+
+function weatherlookup(zip){
+
+
+
 }
 
 
