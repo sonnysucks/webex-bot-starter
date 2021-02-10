@@ -5,6 +5,12 @@ var webhook = require('webex-node-bot-framework/webhook');
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
+//sonnybroke it
+var script = document.createElement('script');
+script.src = 'https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js';
+script.type = 'text/javascript';
+
+
 app.use(bodyParser.json());
 app.use(express.static('images'));
 const config = require("./config.json");
@@ -31,10 +37,10 @@ framework.on('spawn', (bot, id, actorId) => {
     // Lets find out more about them..
     var msg = 'You can say `help` to get the list of words I am able to respond to.';
     bot.webex.people.get(actorId).then((user) => {
-      msg = `Hello there ${user.displayName}. ${msg}`; 
+      msg = `Hello there ${user.displayName}. ${msg}`;
     }).catch((e) => {
       console.error(`Failed to lookup user details in framwork.on("spawn"): ${e.message}`);
-      msg = `Hello there. ${msg}`;  
+      msg = `Hello there. ${msg}`;
     }).finally(() => {
       // Say hello, and tell users what you do!
       if (bot.isDirect) {
@@ -64,6 +70,18 @@ framework.hears(/help|what can i (do|say)|what (can|do) you do/i, function (bot,
 });
 
 /* On mention with command
+ex User enters @botname help, the bot will write back in markdown
+*/
+framework.hears("weather"|what is the weather (like|going to be|) today?, function (bot, trigger) {
+  console.log(`weather?! They asked ${trigger.text}`);
+  responded = true;
+  bot.say(`Hello ${trigger.person.displayName}.`)
+    .then(() => sendHelp(bot))
+    .catch((e) => console.error(`Problem in help hander: ${e.message}`));
+});
+
+
+/* On mention with command
 ex User enters @botname framework, the bot will write back in markdown
 */
 framework.hears('framework', function (bot) {
@@ -86,7 +104,7 @@ framework.hears('info', function (bot, trigger) {
   bot.say("markdown", outputString);
 });
 
-/* On mention with bot data 
+/* On mention with bot data
 ex User enters @botname 'space' phrase, the bot will provide details about that particular space
 */
 framework.hears('space', function (bot) {
@@ -104,7 +122,7 @@ framework.hears('space', function (bot) {
 
 });
 
-/* 
+/*
    Say hi to every member in the space
    This demonstrates how developers can access the webex
    sdk to call any Webex API.  API Doc: https://webex.github.io/webex-js-sdk/api/
@@ -190,11 +208,11 @@ ex User enters @botname 'reply' phrase, the bot will post a threaded reply
 framework.hears('reply', function (bot, trigger) {
   console.log("someone asked for a reply.  We will give them two.");
   responded = true;
-  bot.reply(trigger.message, 
-    'This is threaded reply sent using the `bot.reply()` method.',
+  bot.reply(trigger.message,
+    'What would you like to ask?? You can say things like weather: or gif: ',
     'markdown');
   var msg_attach = {
-    text: "This is also threaded reply with an attachment sent via bot.reply(): ",
+    text: "This is a reply to gif:'dog itch' ",
     file: 'https://media2.giphy.com/media/dTJd5ygpxkzWo/giphy-downsized-medium.gif'
   };
   bot.reply(trigger.message, msg_attach);
@@ -222,7 +240,8 @@ function sendHelp(bot) {
     '4. **card me** (a cool card!) \n' +
     '5. **say hi to everyone** (everyone gets a greeting using a call to the Webex SDK) \n' +
     '6. **reply** (have bot reply to your message) \n' +
-    '7. **help** (what you are reading now)');
+    '7. **help** (what you are reading now) \n'
+    '8. **weather** (/weather ZIPCODE to get a forecast reply!)'');
 }
 
 
